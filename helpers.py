@@ -16,5 +16,6 @@ def load_csv_data(spark, file_path):
     :param spark: spark session
     :return: csv file
     """
-    data = spark.read.csv(file_path, header=True, inferSchema=True)
+    local_file_path = "file:///{}".format(file_path)
+    data = spark.read.csv(local_file_path, header=True, inferSchema=True)
     return data
