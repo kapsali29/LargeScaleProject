@@ -23,4 +23,4 @@ def load_csv_data(spark, file_path):
 
 def write_df_to_hdfs(df, hdfs_path):
     """This function is used to write a DataFrame to HDFS"""
-    df.write.hdfs(hdfs_path)
+    df.write.csv(hdfs_path)
