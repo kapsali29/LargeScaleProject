@@ -34,3 +34,10 @@ def load_parquet_file(spark, file_path):
     """This function is used to load a parquet file as DataFrame"""
     parquet_file = spark.read.parquet(file_path)
     return parquet_file
+
+
+def date_to_hour(row):
+    """This function received a row and transform date to Hour"""
+    hour = row[1].split()[1][:2]
+    latitude = row[3]
+    longitude = row[4]
