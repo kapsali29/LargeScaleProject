@@ -23,3 +23,5 @@ trips_df.show()
 trips_df = trips_df.withColumn("Latitude", trips_df["Latitude"].cast("double"))
 trips_df = trips_df.withColumn("Longitude", trips_df["Longitude"].cast("double"))
 
+# Execute Q1 query
+trips_df.groupBy('Hour').avg().orderBy('Hour', ascending=True).show(24)
