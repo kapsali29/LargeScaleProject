@@ -9,9 +9,8 @@ class Q1(object):
 
     @staticmethod
     def sql_api(trip_data):
-        """
-        This function is used to execute Q1 query using SparkSQL
-        """
+        """This function is used to execute Q1 query using SparkSQL"""
+
         # Remove dirty rows
         filtered_df = trip_data.filter(trip_data['_c3'] != '0').filter(trip_data['_c4'] != '0').filter(
             trip_data['_c5'] != '0').filter(trip_data['_c6'] != '0')
