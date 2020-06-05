@@ -12,3 +12,6 @@ TRIP_VENDORS = "file:///{}".format(os.path.join(YELLOW_TRIP_DATA, 'yellow_tripve
 
 HDFS_TRIP_DATA_PATH = "hdfs://{}:{}/yellow_trip_data/yellow_tripdata_1m.csv".format(MASTER_HOST, MASTER_PORT)
 HDFS_TRIP_VENDORS_PATH = "hdfs://{}:{}/yellow_trip_data/yellow_tripvendors_1m.csv".format(MASTER_HOST, MASTER_PORT)
+
+PARQUET_TRIP_DATA = "hdfs://{}:{}/yellow_trip_data/yellow_tripdata_1m.parquet".format(MASTER_HOST, MASTER_PORT)
+PARQUET_TRIP_VENDORS = "hdfs://{}:{}/yellow_trip_data/yellow_tripvendors_1m.parquet".format(MASTER_HOST, MASTER_PORT)
