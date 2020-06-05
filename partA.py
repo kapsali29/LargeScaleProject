@@ -20,7 +20,6 @@ trips_df = filtered_df.rdd.map(date_to_hour).toDF(['Hour', 'Latitude', 'Longitud
 trips_df.show()
 
 # cast to Coordinates to double
-# trip_data = trip_data.withColumn("_c3", trip_data["_c3"].cast("double"))
-# trip_data = trip_data.withColumn("_c4", trip_data["_c4"].cast("double"))
-# trip_data = trip_data.withColumn("_c5", trip_data["_c5"].cast("double"))
-# trip_data = trip_data.withColumn("_c6", trip_data["_c6"].cast("double"))
+trips_df = trips_df.withColumn("Latitude", trips_df["Latitude"].cast("double"))
+trips_df = trips_df.withColumn("Longitude", trips_df["Longitude"].cast("double"))
+

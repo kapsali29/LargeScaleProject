@@ -41,3 +41,4 @@ def date_to_hour(row):
     hour = row[1].split()[1][:2]
     latitude = row[3]
     longitude = row[4]
+    return hour, latitude, longitude
