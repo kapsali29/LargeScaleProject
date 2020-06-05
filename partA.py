@@ -17,7 +17,7 @@ filtered_df = trip_data.filter(trip_data['_c3'] != '0').filter(trip_data['_c4'] 
 
 # Transform Hour
 get_hour_from_date = udf(lambda x: x.split()[1][:2])
-trips_df = filtered_df.withColumn('_c1', get_hour_from_date(col('first')))
+trips_df = filtered_df.withColumn('_c1', get_hour_from_date(col('_c1')))
 trips_df.show()
 
 # cast to Coordinates to double
