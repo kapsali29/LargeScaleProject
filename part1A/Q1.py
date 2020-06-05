@@ -37,8 +37,10 @@ class Q1(object):
         convert_to_float = trip_rdd.map(
             lambda row: Row(Hour=row.Hour, Latitude=float(row.Latitude), Longitude=float(row.Longitude)))
 
-        convert_to_float.reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1], a[2] + b[2]))
-        groups = convert_to_float.map(lambda row: (row[0], row[1][0] / row[1][2], row[1][1] / row[1][2]))
+        keys = convert_to_float.map(lambda row: (row.Hour, (row.Latitude, row.Longitude, row.Value)))
+
+        accumulated = keys.reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1], a[2] + b[2]))
+        groups = accumulated.map(lambda row: (row[0], row[1][0] / row[1][2], row[1][1] / row[1][2]))
 
 
 
