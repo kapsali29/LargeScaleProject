@@ -16,11 +16,21 @@ def load_csv_data(spark, file_path):
     :param spark: spark session
     :return: csv file
     """
-    local_file_path = "file:///{}".format(file_path)
-    data = spark.read.csv(local_file_path, header=True, inferSchema=True)
+    data = spark.read.csv(file_path, header=True, inferSchema=True)
     return data
 
 
 def write_df_to_hdfs(df, hdfs_path):
     """This function is used to write a DataFrame to HDFS"""
     df.write.csv(hdfs_path)
+
+
+def df_to_parquet(df, path):
+    """This function is used to store a DataFrame as Parquet type"""
+    df.write.parquet(path)
+
+
+def load_parquet_file(spark, file_path):
+    """This function is used to load a parquet file as DataFrame"""
+    parquet_file = spark.read.parquet(file_path)
+    return parquet_file
