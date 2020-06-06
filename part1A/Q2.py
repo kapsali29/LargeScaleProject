@@ -7,16 +7,16 @@ class Q2(object):
     def __init__(self):
         self.spark, self.sc = init_spark()
 
-    @staticmethod
-    def sql_api(trip_data):
+    def sql_api(self, trip_data):
         """This function is used to execute Q1 using SparkSQL"""
 
-        trip_data = trip_data.withColumn("_c3", trip_data["_c3"].cast(DoubleType()))
-        trip_data = trip_data.withColumn("_c4", trip_data["_c4"].cast(DoubleType()))
-        trip_data = trip_data.withColumn("_c5", trip_data["_c5"].cast(DoubleType()))
-        trip_data = trip_data.withColumn("_c6", trip_data["_c6"].cast(DoubleType()))
+        self.spark.udf.register('elapsed_time', elapsed_time)
+        self.spark.udf.register('haversine', haversine)
 
-        result = trip_data.rdd.map(haversine).map(elapsed_time).toDF(['Vendor', 'Time', 'Distance'])
-        group = result.groupBy('Vendor').agg({'Distance': 'max'})
+        trip_data.registerTempTable("trips")
+        res = self.spark.sql(
+            "SELECT _c0 as vendor, elapsed_time(_c1, _c2) as duration,haversine(cast(_c3 as float), cast(_c4 as float), cast(_c5 as float), cast(_c6 as float)) as distance from trips")
 
-        group.show()
+        res.registerTempTable("results")
+        groups = self.spark.sql("SELECT vendor, MAX(distance) FROM results GROUP BY vendor")
+        groups.show()

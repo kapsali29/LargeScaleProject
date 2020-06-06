@@ -49,15 +49,11 @@ def date_to_hour(row):
     return hour, latitude, longitude
 
 
-def haversine(row):
+def haversine(lat1, lon1, lat2, lon2):
     """
     Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     """
-    lat1 = row[3]
-    lon1 = row[4]
-    lat2 = row[5]
-    lon2 = row[6]
 
     # convert decimal degrees to radians
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -71,16 +67,16 @@ def haversine(row):
 
     distance = c * r
 
-    return row[0], row[1], row[2], distance
+    return distance
 
 
-def elapsed_time(row):
+def elapsed_time(start, end):
     """This function is used to find trip duration"""
 
-    start_date = datetime.strptime(row[1], DATE_FORMAT)
-    end_date = datetime.strptime(row[2], DATE_FORMAT)
+    start_date = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+    end_date = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
 
     duration = end_date - start_date
     days, seconds = duration.days, duration.seconds
     minutes = (seconds % 3600) // 60
-    return row[0], minutes, row[3]
+    return minutes
