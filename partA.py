@@ -1,6 +1,6 @@
 
 
-from helpers import load_csv_data, init_spark, haversine
+from helpers import load_csv_data, init_spark, haversine, elapsed_time
 from settings import TRIP_DATA, HDFS_TRIP_DATA_PATH, PARQUET_TRIP_DATA
 
 spark, sc = init_spark()
@@ -20,5 +20,7 @@ trip_data = trip_data.withColumn("_c4", trip_data["_c4"].cast("double"))
 trip_data = trip_data.withColumn("_c5", trip_data["_c5"].cast("double"))
 trip_data = trip_data.withColumn("_c6", trip_data["_c6"].cast("double"))
 
+
 result = trip_data.rdd.map(haversine).toDF()
+result = result.rdd.map(elapsed_time).toDF()
 result.show()
