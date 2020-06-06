@@ -47,9 +47,13 @@ class Q1(object):
 
         # ReduceBy Hour and divide by total appearances
         accumulated = keys.reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1], a[2] + b[2]))
-        groups = accumulated.map(lambda row: (row[0], row[1][0] / row[1][2], row[1][1] / row[1][2]))
+        groups = accumulated.map(lambda row: (row[0], (row[1][0] / row[1][2], row[1][1] / row[1][2])))
 
-        # ordering
+        # Sort By Hour
+        sorted_groups = groups.sortByKey()
+        list_groups = sorted_groups.collect()
+        for element in list_groups:
+            print(element)
 
 
 
