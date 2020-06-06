@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from math import radians, cos, sin, asin, sqrt
 
 
 def init_spark():
@@ -42,3 +43,28 @@ def date_to_hour(row):
     latitude = row[3]
     longitude = row[4]
     return hour, latitude, longitude
+
+
+def haversine(row):
+    """
+    Calculate the great circle distance between two points
+    on the earth (specified in decimal degrees)
+    """
+    lat1 = row[3]
+    lon1 = row[4]
+    lat2 = row[5]
+    lon2 = row[6]
+
+    # convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # Radius of earth in kilometers. Use 3956 for miles
+
+    distance = c*r
+
+    return row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], distance
