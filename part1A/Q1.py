@@ -54,6 +54,3 @@ class Q1(object):
         list_groups = sorted_groups.collect()
         for element in list_groups:
             print(element)
-
-
-
