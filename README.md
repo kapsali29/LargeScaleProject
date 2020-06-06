@@ -14,3 +14,7 @@ Semester Project for Large Scale Course
 ### Install project requirements
 
 `pip install -r requirements.txt`
+
+### Run PySpark Scripts
+
+Run PySpark scripts using spark-submit e.g: `spark-submit partA.py`
