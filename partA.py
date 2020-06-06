@@ -8,7 +8,9 @@ from settings import TRIP_DATA, HDFS_TRIP_DATA_PATH, PARQUET_TRIP_DATA
 
 q1 = Q1()
 trip_data = load_csv_data(q1.spark, TRIP_DATA)
-q1.sql_api(trip_data)
+trip_rdd = trip_data.rdd
+q1.mr_api(trip_rdd)
+# q1.sql_api(trip_data)
 
 # df_to_parquet(trip_data, PARQUET_TRIP_DATA)
 
