@@ -21,5 +21,7 @@ trip_data = trip_data.withColumn("_c5", trip_data["_c5"].cast(DoubleType()))
 trip_data = trip_data.withColumn("_c6", trip_data["_c6"].cast(DoubleType()))
 
 
-result = trip_data.rdd.map(haversine).map(elapsed_time).toDF()
-result.show()
+result = trip_data.rdd.map(haversine).map(elapsed_time).toDF(['Vendor', 'Time', 'Distance'])
+group = result.groupBy('Vendor').agg({'Distance': 'max'})
+
+group.show()
