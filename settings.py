@@ -6,6 +6,8 @@ MASTER_PORT = 9000
 
 # APPLICATION SETTINGS
 
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 YELLOW_TRIP_DATA = '/home/user/project-data/yellow_trip_data'
 TRIP_DATA = "file:///{}".format(os.path.join(YELLOW_TRIP_DATA, 'yellow_tripdata_1m.csv'))
 TRIP_VENDORS = "file:///{}".format(os.path.join(YELLOW_TRIP_DATA, 'yellow_tripvendors_1m.csv'))

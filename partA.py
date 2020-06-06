@@ -20,4 +20,5 @@ trip_data = trip_data.withColumn("_c4", trip_data["_c4"].cast("double"))
 trip_data = trip_data.withColumn("_c5", trip_data["_c5"].cast("double"))
 trip_data = trip_data.withColumn("_c6", trip_data["_c6"].cast("double"))
 
-result = trip_data.rdd.map(haversine)
+result = trip_data.rdd.map(haversine).toDF()
+result.show()

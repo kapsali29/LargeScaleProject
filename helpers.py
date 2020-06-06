@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from pyspark.sql import SparkSession
 from math import radians, cos, sin, asin, sqrt
+
+from settings import DATE_FORMAT
 
 
 def init_spark():
@@ -65,6 +69,18 @@ def haversine(row):
     c = 2 * asin(sqrt(a))
     r = 6371  # Radius of earth in kilometers. Use 3956 for miles
 
-    distance = c*r
+    distance = c * r
 
-    return row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], distance
+    return row[0], row[1], row[2], distance
+
+
+def elapsed_time(row):
+    """This function is used to find trip duration"""
+
+    start_date = datetime.strptime(row[1], DATE_FORMAT)
+    end_date = datetime.strptime(row[2], DATE_FORMAT)
+
+    duration = end_date - start_date
+    days, seconds = duration.days, duration.seconds
+    minutes = (seconds % 3600) // 60
+    return row[0], minutes, row[3]
