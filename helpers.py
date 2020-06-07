@@ -84,3 +84,39 @@ def elapsed_time(row):
     days, seconds = duration.days, duration.seconds
     minutes = (seconds % 3600) // 60
     return row[0], minutes, row[3]
+
+
+def time_travel_in_seconds(start,end):
+    """This function calculates the trip duration in seconds """
+    start_date = datetime.strptime(start, DATE_FORMAT)
+    end_date = datetime.strptime(end, DATE_FORMAT)
+
+    duration = end_date - start_date
+    return duration.seconds
+
+
+def distance(lat1, lon1, lat2, lon2):
+    """
+    This function calculates the trip 
+    distance using haversine formula 
+    """
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # Radius of earth in kilometers. Use 3956 for miles
+
+    return c * r
+
+
+def find_max(x,y):
+    """
+    This function receives two lists 
+    and return the list, which has the greatest
+    element in second position
+    """
+    if x[1] > y[1]: return x
+    return y
+
+
