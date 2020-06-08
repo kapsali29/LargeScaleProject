@@ -18,5 +18,5 @@ class Q2(object):
             "SELECT _c0 as vendor, elapsed_time(_c1, _c2) as duration,haversine(cast(_c3 as float), cast(_c4 as float), cast(_c5 as float), cast(_c6 as float)) as distance from trips")
 
         res.registerTempTable("results")
-        groups = self.spark.sql("SELECT vendor, MAX(distance) FROM results GROUP BY vendor")
+        groups = self.spark.sql("SELECT vendor, MAX(distance), MAX(duration) FROM results GROUP BY vendor")
         groups.show()
