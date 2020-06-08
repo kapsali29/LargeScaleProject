@@ -77,6 +77,5 @@ def elapsed_time(start, end):
     end_date = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
 
     duration = end_date - start_date
-    days, seconds = duration.days, duration.seconds
-    minutes = (seconds % 3600) // 60
-    return minutes
+    seconds = duration.seconds
+    return seconds
