@@ -79,3 +79,12 @@ def elapsed_time(start, end):
     duration = end_date - start_date
     seconds = duration.seconds
     return seconds
+
+def find_max(x,y):
+    """
+    This function receives two lists 
+    and return the list, which has greater
+    element in second position
+    """
+    if x[1] > y[1]: return x
+    return y
