@@ -32,15 +32,13 @@ class Q2(object):
         
     def mr_api(trip_data,vendors):
 
-        trip_data = sc.textFile(HDFS_TRIP_DATA_PATH). \
-                    filter(lambda x : (float(x.split(",")[3])!=0 and float(x.split(",")[4]!=0
-                        and float(x.split(",")[5]!=0 and float(x.split(",")[6]!=0))))). \
-                    map(lambda x : (x.split(",")[0],(elapsed_time(x.split(",")[1],
-                        x.split(",")[2]),haversine(float(x.split(",")[3]),float(x.split(",")[4]),
-                        float(x.split(",")[5]),float(x.split(",")[6])))))
+        trip_data = trip_data.filter(lambda x : (float(x.split(",")[3])!=0 and float(x.split(",")[4]!=0
+                                    and float(x.split(",")[5]!=0 and float(x.split(",")[6]!=0))))). \
+                               map(lambda x : (x.split(",")[0],(elapsed_time(x.split(",")[1],
+                                    x.split(",")[2]),haversine(float(x.split(",")[3]),float(x.split(",")[4]),
+                                    float(x.split(",")[5]),float(x.split(",")[6])))))
 
-        vendors = sc.textFile(HDFS_TRIP_VENDORS_PATH). \
-                    map(lambda x : (x.split(",")[0], x.split(",")[1]))
+        vendors = vendors.map(lambda x : (x.split(",")[0], x.split(",")[1]))
 
 
         results = trip_data.join(vendors). \
