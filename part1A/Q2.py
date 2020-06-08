@@ -42,9 +42,9 @@ class Q2(object):
 
 
         results = trip_data.join(vendors). \
-                    map(lambda x : (x[1][1], [x[1][0][0],x[1][0][1]])). \
-                    reduceByKey(lambda x,y: find_max(x,y)). \
-                    map(lambda x : (x[0],x[1][0],x[1][1]))
+                            map(lambda x : (x[1][1], [x[1][0][0],x[1][0][1]])). \
+                            reduceByKey(lambda x,y: find_max(x,y)). \
+                            map(lambda x : (x[0],x[1][0],x[1][1]))
 
 
         for result in results.collect():
