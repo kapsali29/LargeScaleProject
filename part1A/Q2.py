@@ -25,7 +25,7 @@ class Q2(object):
 
         result = self.spark.sql(
             "SELECT * FROM vendor_trips WHERE vendor_id={} AND distance={} OR vendor_id={} AND distance={}".
-            format(grp_rdd[0]['vendor_id'], grp_rdd[0]['max(distance)'], grp_rdd[1]['vendor_id'],
-                   grp_rdd[1]['max(distance)'])
+            format(grp_rdd[0]['vendor_id'], grp_rdd[0]['max_distance'], grp_rdd[1]['vendor_id'],
+                   grp_rdd[1]['max_distance'])
             )
         result.show()
