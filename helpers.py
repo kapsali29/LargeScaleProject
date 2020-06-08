@@ -17,7 +17,6 @@ def init_spark():
 def load_csv_data(spark, file_path):
     """
     This function is used to load csv files
-
     :param spark: spark session
     :return: csv file
     """
@@ -49,15 +48,11 @@ def date_to_hour(row):
     return hour, latitude, longitude
 
 
-def haversine(row):
+def haversine(lat1, lon1, lat2, lon2):
     """
     Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     """
-    lat1 = row[3]
-    lon1 = row[4]
-    lat2 = row[5]
-    lon2 = row[6]
 
     # convert decimal degrees to radians
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -71,52 +66,25 @@ def haversine(row):
 
     distance = c * r
 
-    return row[0], row[1], row[2], distance
+    return distance
 
 
-def elapsed_time(row):
+def elapsed_time(start, end):
     """This function is used to find trip duration"""
 
-    start_date = datetime.strptime(row[1], DATE_FORMAT)
-    end_date = datetime.strptime(row[2], DATE_FORMAT)
+    start_date = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+    end_date = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
 
     duration = end_date - start_date
-    days, seconds = duration.days, duration.seconds
-    minutes = (seconds % 3600) // 60
-    return row[0], minutes, row[3]
-
-
-def time_travel_in_seconds(start,end):
-    """This function calculates the trip duration in seconds """
-    start_date = datetime.strptime(start, DATE_FORMAT)
-    end_date = datetime.strptime(end, DATE_FORMAT)
-
-    duration = end_date - start_date
-    return duration.seconds
-
-
-def distance(lat1, lon1, lat2, lon2):
-    """
-    This function calculates the trip 
-    distance using haversine formula 
-    """
-    # haversine formula
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * asin(sqrt(a))
-    r = 6371  # Radius of earth in kilometers. Use 3956 for miles
-
-    return c * r
+    seconds = duration.seconds
+    return seconds
 
 
 def find_max(x,y):
-    """
-    This function receives two lists 
-    and return the list, which has the greatest
-    element in second position
-    """
-    if x[1] > y[1]: return x
-    return y
-
-
+	"""
+	This function receives two lists 
+	and return the list, which has greater
+	element in second position
+	"""
+	if x[1] > y[1]: return x
+	return y

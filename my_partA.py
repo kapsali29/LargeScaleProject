@@ -1,7 +1,7 @@
 from pyspark.sql.types import DoubleType
 from datetime import datetime
 from math import radians, cos, sin, asin, sqrt
-from helpers import load_csv_data, init_spark, haversine, elapsed_time#, time_travel_in_seconds, distance, find_max
+from helpers import load_csv_data, init_spark, haversine, elapsed_time
 from settings import TRIP_DATA, HDFS_TRIP_DATA_PATH, PARQUET_TRIP_DATA, DATE_FORMAT
 
 from pyspark.sql import SparkSession
@@ -13,7 +13,7 @@ spark, sc = init_spark()
 #trip_data = load_csv_data(spark, TRIP_DATA)
 
 #('240518298477', ((4, 64.93966808512545), '2'))
-
+'''
 def time_travel_in_seconds(start,end):
 	"""This function calculates the trip duration in seconds """
 	start_date = datetime.strptime(start, DATE_FORMAT)
@@ -47,14 +47,16 @@ def find_max(x,y):
 	if x[1] > y[1]: return x
 	return y
 
-
+'''
 trip_data = sc.textFile("hdfs://master:9000/yellow_trip_data/yellow_tripdata_1m.csv"). \
-		map(lambda x : (x.split(",")[0],(time_travel_in_seconds(x.split(",")[1],
-			x.split(",")[2]),distance(float(x.split(",")[3]),float(x.split(",")[4]),float(x.split(",")[5]),float(x.split(",")[6])))))
-
+			filter(lambda x : (float(x.split(",")[3])!=0 and float(x.split(",")[4]!=0 
+						and float(x.split(",")[5]!=0 and float(x.split(",")[6]!=0))))). \
+			map(lambda x : (x.split(",")[0],(elapsed_time(x.split(",")[1],
+						x.split(",")[2]),haversine(float(x.split(",")[3]),float(x.split(",")[4]),
+						float(x.split(",")[5]),float(x.split(",")[6])))))
 
 vendors = sc.textFile("hdfs://master:9000/yellow_trip_data/yellow_tripvendors_1m.csv"). \
-		map(lambda x : (x.split(",")[0], x.split(",")[1]))	
+			map(lambda x : (x.split(",")[0], x.split(",")[1]))	
 
 
 
