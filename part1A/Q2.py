@@ -32,20 +32,19 @@ class Q2(object):
         
     def mr_api(trip_data,vendors):
 
-        trip_data = trip_data.filter(lambda x : (float(x.split(",")[3])!=0 and float(x.split(",")[4]!=0
-                                    and float(x.split(",")[5]!=0 and float(x.split(",")[6]!=0))))). \
-                               map(lambda x : (x.split(",")[0],(elapsed_time(x.split(",")[1],
-                                    x.split(",")[2]),haversine(float(x.split(",")[3]),float(x.split(",")[4]),
-                                    float(x.split(",")[5]),float(x.split(",")[6])))))
+        trip_data = trip_data.map(lambda x : (x.split(",")[0],x.split(",")[1],x.split(",")[2],float(x.split(",")[3]),float(x.split(",")[4]),float(x.split(",")[5]),float(x.split(",")[6])))
+
+        filtered_trip_data=trip_data.filter(lambda x : x[3]!=0 and x[4]!=0 and x[5]!=0 and x[6]!=0). \
+                                    map(lambda x : (x[0],(elapsed_time(x[1],x[2]),haversine(x[3], x[4], x[5], x[6]))))
 
         vendors = vendors.map(lambda x : (x.split(",")[0], x.split(",")[1]))
 
 
-        results = trip_data.join(vendors). \
-                            map(lambda x : (x[1][1], [x[1][0][0],x[1][0][1]])). \
-                            reduceByKey(lambda x,y: find_max(x,y)). \
-                            map(lambda x : (x[0],x[1][0],x[1][1]))
+        result = filtered_trip_data.join(vendors). \
+                                    map(lambda x : (x[1][1], [x[1][0][0],x[1][0][1]])). \
+                                    reduceByKey(lambda x,y: find_max(x,y)). \
+                                    map(lambda x : (x[0],x[1][0],x[1][1]))
 
 
-        for result in results.collect():
-             print(result)
+        for i in result.collect():
+            print(i)
