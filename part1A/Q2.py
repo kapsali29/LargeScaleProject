@@ -1,6 +1,6 @@
 from pyspark.sql.types import DoubleType
 
-from helpers import init_spark, haversine, elapsed_time
+from helpers import init_spark, haversine, elapsed_time, find_max
 
 
 class Q2(object):
