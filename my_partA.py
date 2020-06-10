@@ -51,13 +51,13 @@ def find_max(x,y):
     return y
 
 '''
-trip_data = sc.textFile("hdfs://master:9000/yellow_trip_data/yellow_tripdata_1m.csv")
-vendors = sc.textFile("hdfs://master:9000/yellow_trip_data/yellow_tripvendors_1m.csv")
+trip_data = sc.textFile("file:////home/user/project-data/yellow_trip_data/yellow_tripdata_1m.csv")
+vendors = sc.textFile("file:///home/user/project-data/yellow_trip_data/yellow_tripvendors_1m.csv")
 
-trip_data = trip_data.map(lambda x : (x.split(",")[0],x.split(",")[1],x.split(",")[2],float(x.split(",")[3]),float(x.split(",")[4]),float(x.split(",")[5]),float(x.split(",")[6])))
+trip_data = trip_data.map(lambda x : (x.split(",")[0],x.split(",")[1],x.split(",")[2],x.split(",")[3],x.split(",")[4],x.split(",")[5],x.split(",")[6]))
 
-filtered_trip_data=trip_data.filter(lambda x : x[3]!=0 and x[4]!=0 and x[5]!=0 and x[6]!=0). \
-                             map(lambda x : (x[0],(elapsed_time(x[1],x[2]),haversine(x[3], x[4], x[5], x[6]))))
+filtered_trip_data=trip_data.filter(lambda x : x[3]!='0' and x[4]!='0' and x[5]!='0' and x[6]!='0'). \
+                             map(lambda x : (x[0],(elapsed_time(x[1],x[2]),haversine(float(x[3]), float(x[4]), float(x[5]), float(x[6])))))
 
 vendors = vendors.map(lambda x : (x.split(",")[0], x.split(",")[1]))
 
@@ -65,7 +65,6 @@ result = filtered_trip_data.join(vendors). \
                             map(lambda x : (x[1][1], [x[1][0][0],x[1][0][1]])). \
                             reduceByKey(lambda x,y: find_max(x,y)). \
                             map(lambda x : (x[0],x[1][0],x[1][1]))
-
 
 for i in result.collect():
     print(i)
