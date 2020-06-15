@@ -17,3 +17,5 @@ filtered_rdd = customer_complaints.filter(lambda complaint: complaint.startswith
 splitted = filtered_rdd.map(split_row)
 cleaned_complaints = splitted.filter(lambda complaint: complaint is not None)
 keep_complaints = cleaned_complaints.filter(lambda complaint: complaint[2]!='')
+
+print(keep_complaints.take(10))
