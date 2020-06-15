@@ -17,10 +17,13 @@ class CustomerComplaints(object):
     def data_cleansing(self, customer_complaints):
         """This function is used to remove dirty data from customer complaints"""
 
+        # keep only rows starting with `201`
         filtered_complaints_rdd = customer_complaints.filter(lambda complaint: complaint.startswith('201'))
 
+        # split rows and remove dirty ones
         splitted_rows = filtered_complaints_rdd.map(self.split_row)
         cleaned_complaints = splitted_rows.map(lambda complaint: complaint is not None)
 
+        # keep only rows that have user comment
         keep_complaints = cleaned_complaints.filter(lambda complaint: complaint[2] != '')
         return keep_complaints
