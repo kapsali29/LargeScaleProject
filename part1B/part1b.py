@@ -4,6 +4,9 @@ from pyspark.sql import SparkSession
 
 
 def part1b(trip_data, vendors, spark):
+    """
+    Execute the SQL questions of part1B
+    """
     trip_data.createOrReplaceTempView("trip_data")
     vendors.createOrReplaceTempView("vendors")
     spark.udf.register('elapsed_time', elapsed_time)
