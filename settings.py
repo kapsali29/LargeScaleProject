@@ -4,8 +4,11 @@ import os
 MASTER_HOST = 'master'
 MASTER_PORT = 9000
 
+# ######################
 # APPLICATION SETTINGS
+########################
 
+# PART1 SETTINGS
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 YELLOW_TRIP_DATA = '/home/user/project-data/yellow_trip_data'
@@ -17,3 +20,5 @@ HDFS_TRIP_VENDORS_PATH = "hdfs://{}:{}/yellow_trip_data/yellow_tripvendors_1m.cs
 
 PARQUET_TRIP_DATA = "hdfs://{}:{}/yellow_trip_data/yellow_tripdata_1m.parquet".format(MASTER_HOST, MASTER_PORT)
 PARQUET_TRIP_VENDORS = "hdfs://{}:{}/yellow_trip_data/yellow_tripvendors_1m.parquet".format(MASTER_HOST, MASTER_PORT)
+
+# PART2 SETTINGS
