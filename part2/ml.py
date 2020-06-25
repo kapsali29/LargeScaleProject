@@ -22,7 +22,7 @@ class CustomerComplaints(object):
 
         # split rows and remove dirty ones
         splitted_rows = filtered_complaints_rdd.map(self.split_row)
-        cleaned_complaints = splitted_rows.map(lambda complaint: complaint is not None)
+        cleaned_complaints = splitted_rows.filter(lambda complaint: complaint is not None)
 
         # keep only rows that have user comment
         keep_complaints = cleaned_complaints.filter(lambda complaint: complaint[2] != '')
