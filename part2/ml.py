@@ -27,3 +27,22 @@ class CustomerComplaints(object):
         # keep only rows that have user comment
         keep_complaints = cleaned_complaints.filter(lambda complaint: complaint[2] != '')
         return keep_complaints
+
+    def only_distinct_words(self, complaints):
+        """This function returns the words, which are not stop words, from a list of complaints"""
+
+        # split the words
+        words = complaints.flatMap(lambda x : x[2].split(' '))
+
+        # convert all words to lower case
+        lower_case_words = words.map(lambda x : x.lower())
+
+        # keep only the distinct words
+        distinct_words = lower_case_words.distinct()
+
+        # keep only the strings that include only letters
+        only_words = distinct_words.filter(lambda x : bool(re.match("^[a-z]*$",x)))
+
+        #keep only the words that are not stop words
+        final_words = only_words.filter(lambda x : x not in STOP_WORDS)
+        return final_words
