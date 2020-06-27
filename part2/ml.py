@@ -1,5 +1,6 @@
 from helpers import init_spark
-
+from settings import STOP_WORDS
+import re
 
 class CustomerComplaints(object):
     def __init__(self):
