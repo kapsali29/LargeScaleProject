@@ -20,7 +20,13 @@ distinct_words = lower_case_words.distinct()
 only_words = distinct_words.filter(lambda x : bool(re.match("^[a-z]*$",x)))
 final_words = only_words.filter(lambda x : x not in STOP_WORDS)
 """
-final_words = cc.only_distinct_words(cleaned_data)
+############# TFIDF
 
-for i in final_words.take(100):
-    print (i)
+only_words = cc.only_distinct_words(cleaned_data)
+
+lexicon_size = 200
+
+most_common_words = only_words.flatMap(lambda x: x[1].split(" ")). \
+    map(lambda x: (x, 1)). \
+    reduceByKey(lambda x, y: x + y). \
+    sortBy(lambda x: x[1], ascending=False).map(lambda x: x[0]).take(lexicon_size)

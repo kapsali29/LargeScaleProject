@@ -2,6 +2,7 @@ from helpers import init_spark
 from settings import STOP_WORDS
 import re
 
+
 class CustomerComplaints(object):
     def __init__(self):
         self.spark, self.sc = init_spark()
@@ -33,17 +34,17 @@ class CustomerComplaints(object):
         """This function returns the words, which are not stop words, from a list of complaints"""
 
         # split the words
-        words = complaints.flatMap(lambda x : x[2].split(' '))
+        words = complaints.map(lambda x: (x[1], x[2].split(' ')))
 
         # convert all words to lower case
-        lower_case_words = words.map(lambda x : x.lower())
+        lower_case_words = words.map(lambda x: (x[0], [word.lower() for word in x[1]]))
 
-        # keep only the distinct words
-        distinct_words = lower_case_words.distinct()
+        # # keep only the distinct words
+        # distinct_words = lower_case_words.distinct()
 
         # keep only the strings that include only letters
-        only_words = distinct_words.filter(lambda x : bool(re.match("^[a-z]*$",x)))
+        only_words = lower_case_words.map(lambda x: (x[0], " ".join([word for word in x[1] if bool(
+            re.match("^[a-z]*$", word)) and word != '' and word not in STOP_WORDS])))
 
-        #keep only the words that are not stop words
-        final_words = only_words.filter(lambda x : x not in STOP_WORDS)
-        return final_words
+        # keep only the words that are not stop words
+        return only_words
