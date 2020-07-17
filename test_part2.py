@@ -35,7 +35,7 @@ my_words3 = my_words2.map(lambda x : (x,1))
 my_words4 = my_words3.reduceByKey(lambda x, y: x + y)
 my_words5 = my_words4.map(lambda x : (x[1], x[0]))
 my_words6 = my_words5.sortByKey(ascending=False)
-my_words7 = my_words6.map(lambda x : x[1].lower())
+my_words7 = my_words6.map(lambda x : x[1].lower()) #thelei na anebei pio 4hla
 my_words8 = my_words7.filter(lambda x : bool(re.match("^[a-z]*$",x)))
 my_words9 = my_words8.filter(lambda x : x not in STOP_WORDS)
 lexikon = my_words9.take(lexikon_size)
@@ -53,7 +53,28 @@ complaints8 = complaints7.map(lambda x : ((x[0][2], x[0][1]), [(x[1][1], x[1][0]
 complaints9 = complaints8.reduceByKey(lambda x, y : x + y)
 complaints10 = complaints9.map(lambda x : (x[0][1], sorted(x[1], key = lambda y : y[0])))
 complaints11 = complaints10.map(lambda x : (x[0], SparseVector(lexikon_size, [y[0] for y in x[1]], [y[1] for y in x[1]])))
+"""
+('Credit reporting credit repair services or other personal consumer reports', SparseVector(200, {1: 4.0, 3: 8.0, 6: 1.0, 8: 3.0, 9: 3.0, 11: 2.0, 12: 2.0, 14: 3.0, 21: 4.0, 28: 1.0, 31: 3.0, 37: 1.0, 42: 1.0, 43: 1.0, 44: 3.0, 54: 1.0, 78: 2.0, 90: 1.0, 102: 3.0, 113: 2.0, 134: 1.0, 174: 1.0}))
+"""
+synolo_keimenwn = complaints11.count()
 
+data = cc.only_distinct_words(cleaned_data)
+data1 = data.flatMap(lambda x : x[1].split(" "))
+data2 = data1.map(lambda x : (x,1))
+data3 = data2.map(lambda x : (x,1))
+data4 = data3.reduceByKey(lambda x, y: x + y)
+
+
+def my_search(my_list, my_word):
+    for i in my_list:
+        if my_word == i[0]:
+            return i[1]
+
+def my_sum(x,size):
+    summ=0
+    for i in range(size):
+        summ+=x[i]
+    return summ
 
 """
 ('Credit reporting credit repair services or other personal consumer reports', SparseVector(200, {1: 4.0, 3: 8.0, 6: 1.0, 8: 3.0, 9: 3.0, 11: 2.0, 12: 2.0, 14: 3.0, 21: 4.0, 28: 1.0, 31: 3.0, 37: 1.0, 42: 1.0, 43: 1.0, 44: 3.0, 54: 1.0, 78: 2.0, 90: 1.0, 102: 3.0, 113: 2.0, 134: 1.0, 174: 1.0}))
