@@ -56,6 +56,19 @@ complaints11 = complaints10.map(lambda x : (x[0], SparseVector(lexikon_size, [y[
 
 
 """
+('Credit reporting credit repair services or other personal consumer reports', SparseVector(200, {1: 4.0, 3: 8.0, 6: 1.0, 8: 3.0, 9: 3.0, 11: 2.0, 12: 2.0, 14: 3.0, 21: 4.0, 28: 1.0, 31: 3.0, 37: 1.0, 42: 1.0, 43: 1.0, 44: 3.0, 54: 1.0, 78: 2.0, 90: 1.0, 102: 3.0, 113: 2.0, 134: 1.0, 174: 1.0}))
+(label, (lexikon_size,{id_le3hs:plh8os emfanisewn sthn protash}))
+
+tf = # emfanisewn sthn protash / #plh8os le3ewn (gia na ypologisw to # le3ewn a8roizw ta plh8h poy briskontai se {}
+
+idf = prepei na ypologisw oi le3eis tou lexikon se posa keimena ypologizontai
+opws alla3e o kapsalis to erwthma 3, ka8e keimeno exei mono tis diaforetikes le3eis
+trexoyme word_count 3ana kai briskoyme ta plh8h poy mas endiaferoun (#emfanisewn ka8e le3hs tou lexikon se poses fores brisketai)
+
+
+"""
+
+"""
 only_words = cc.only_distinct_words(cleaned_data)
 """
 for i in complaints11.take(100):
@@ -68,3 +81,4 @@ most_common_words = only_words.flatMap(lambda x: x[1].split(" ")). \
     reduceByKey(lambda x, y: x + y). \
     sortBy(lambda x: x[1], ascending=False).map(lambda x: x[0]).take(lexicon_size)
 """
+
