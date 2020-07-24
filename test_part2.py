@@ -49,17 +49,7 @@ sc = cc.sc
 customer_complaints = sc.textFile(CUSTOMER_COMPLAINTS_HDFS)
 cleaned_data = cc.data_cleansing(customer_complaints)
 
-"""
-print(cleaned_data.count())
-print(cleaned_data.take(1))
-"""
-## Kwsta sunexise apo edw
 
-words = cleaned_data.flatMap(lambda x : x[2].split(' '))
-lower_case_words = words.map(lambda x : x.lower())
-distinct_words = lower_case_words.distinct()
-only_words = distinct_words.filter(lambda x : bool(re.match("^[a-z]*$",x)))
-final_words = only_words.filter(lambda x : x not in STOP_WORDS)
 ############# most common words
 lexikon_size = 200
 my_words = cleaned_data.map(lambda x : (x[2]))
@@ -104,8 +94,6 @@ data4 = data3.reduceByKey(lambda x, y: x + y)
 #to data4 exei to pli8os diforetikwn keimenwn pou periexoyn tis le3eis toy le3ikou
 my_words = data4.collect()
 
-#to data4 exei to pli8os diforetikwn keimenwn pou periexoyn tis le3eis toy le3ikou
-my_words = data4.collect()
 
 def my_search(my_list, my_word):
     """
@@ -148,21 +136,38 @@ def my_func(my_list, my_words, lexikon_size, synolo_keimenwn):
     a.append(my_list[0])
     return a
 
+def float_tuple(tup):
+    temp=()
+    for t in tup:
+        temp = temp + (float(t),)
+    return temp
+
+
 
 result = complaints11.map(lambda x : my_func(x, my_words, lexikon_size, synolo_keimenwn))
-
-"""
-[('', 184), ('still', 104213), ('full', 44733), ('score', 39032), ('account', 478034), ('two', 53154), ('also', 136231), ('even', 90215), ('phone', 107445), ('told', 211129)]
-('Credit reporting credit repair services or other personal consumer reports', SparseVector(200, {1: 4.0, 3: 8.0, 6: 1.0, 8: 3.0, 9: 3.0, 11: 2.0, 12: 2.0, 14: 3.0, 21: 4.0, 28: 1.0, 31: 3.0, 37: 1.0, 42: 1.0, 43: 1.0, 44: 3.0, 54: 1.0, 78: 2.0, 90: 1.0, 102: 3.0, 113: 2.0, 134: 1.0, 174: 1.0}))
-(label, (lexikon_size,{id_le3hs:plh8os emfanisewn sthn protash}))
-
-tf = # emfanisewn sthn protash / #plh8os le3ewn (gia na ypologisw to # le3ewn a8roizw ta plh8h poy briskontai se {}
-
-idf = prepei na ypologisw oi le3eis tou lexikon se posa keimena ypologizontai
-opws alla3e o kapsalis to erwthma 3, ka8e keimeno exei mono tis diaforetikes le3eis
-trexoyme word_count 3ana kai briskoyme ta plh8h poy mas endiaferoun
+result1 = result.map(lambda x : [x[0],x[1],float_tuple(x[2]),x[3]])
+result2 = result1.map(lambda x : (x[3],SparseVector(x[0],x[1],x[2])))
+resultDF = result2.toDF(["string_label","features"])
 
 
 """
-for i in result.take(100):
-    print(i)
+[Row(label='Mortgage', features=SparseVector(200, {7: 0.1424, 9: 0.0257, 14: 0.0259, 19: 0.0272, 22: 0.0659, 23: 0.0304, 28: 0.0389, 31: 0.0327, 33: 0.0318, 40: 0.0321, 56: 0.0384, 69: 0.0397, 72: 0.0462, 84: 0.0407, 106: 0.0433, 145: 0.0496, 154: 0.0485, 191: 0.1227, 192: 0.0488})), Row(label='Debt collection', features=SparseVector(200, {1: 0.462, 4: 0.0149, 9: 0.0347, 11: 0.0159, 14: 0.0175, 17: 0.0182, 20: 0.063, 23: 0.0617, 25: 0.0208, 26: 0.0205, 27: 0.0221, 32: 0.0867, 34: 0.0221, 41: 0.0249, 45: 0.0235, 60: 0.0267, 72: 0.0312, 76: 0.0265, 87: 0.028, 93: 0.0285, 150: 0.0381, 151: 0.0321, 160: 0.0317, 161: 0.0366, 166: 0.0331})), Row(label='Credit card or prepaid card', features=SparseVector(200, {16: 0.2762, 32: 0.2673, 142: 0.3951})), Row(label='Checking or savings account', features=SparseVector(200, {3: 0.0808, 10: 0.3048, 134: 0.2389, 157: 0.2354})), Row(label='Debt collection', features=SparseVector(200, {2: 0.0532, 6: 0.1194, 8: 0.1096, 18: 0.1526, 41: 0.1844}))]
+
+"""
+
+stringIndexer = StringIndexer(inputCol="string_label",outputCol="label")
+stringIndexer.setHandleInvalid("skip")
+stringIndexerModel = stringIndexer.fit(resultDF)
+resultDF = stringIndexerModel.transform(resultDF)
+
+
+(train, test) = resultDF.randomSplit([0.7, 0.3])
+train = train.cache()
+lr = LogisticRegression(maxIter=100, regParam=0.3, elasticNetParam=0.8, featuresCol='features', labelCol='label')
+lrModel = lr.fit(train)
+
+result = lrModel.transform(test)
+predictionAndLabels = result.select("prediction", "label")
+evaluator = MulticlassClassificationEvaluator(metricName="accuracy")
+print("Test set accuracy = " + str(evaluator.evaluate(predictionAndLabels)))
+
