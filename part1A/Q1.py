@@ -1,6 +1,8 @@
 from pyspark import Row
 
 from helpers import init_spark, date_to_hour
+from pyspark.sql import SQLContext
+from pyspark.sql.functions import *
 
 
 class Q1(object):
@@ -18,11 +20,11 @@ class Q1(object):
             trip_data['_c5'] != '0').filter(trip_data['_c6'] != '0')
 
         # Transform date to Hour
-        trips_df = filtered_df.rdd.map(date_to_hour).toDF(['Hour', 'Latitude', 'Longitude'])
+        trips_df = filtered_df.withColumn('Hour', substring(col("_c1"), 12, 2)).select('Hour', '_c3', '_c4')
 
         # cast to Coordinates to double
-        trips_df = trips_df.withColumn("Latitude", trips_df["Latitude"].cast("double"))
-        trips_df = trips_df.withColumn("Longitude", trips_df["Longitude"].cast("double"))
+        trips_df = trips_df.withColumn("Latitude", trips_df["_c3"].cast("double"))
+        trips_df = trips_df.withColumn("Longitude", trips_df["_c4"].cast("double"))
 
         # Find avg Lat Lon for each Hour
         q1 = trips_df.groupBy('Hour').avg().orderBy('Hour', ascending=True)
