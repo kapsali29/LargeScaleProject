@@ -13,23 +13,21 @@ from settings import HDFS_TRIP_DATA_PATH, PARQUET_TRIP_DATA
 
 q1_instance = Q1()
 
+# Execute Q1 using SPARK-SQL and CSV
 trip_data = q1_instance.spark.read.csv(HDFS_TRIP_DATA_PATH)
 
-# Execute Q1 using SPARK-SQL and CSV
 sql_start_time = time.time()
-
 q1_instance.sql_api(trip_data=trip_data)
 
 sql_end_time = time.time()
 sql_q1_time = sql_end_time - sql_start_time
 print(" Time needed to execute Q1 using SparkSQL and CSV: {}".format(sql_q1_time))
 
+# Execute Q1 using MR and CSV
 trip_data_rdd = trip_data.rdd
 
-# Execute Q1 using MR and CSV
 mr_start_time = time.time()
-
-q1_instance.sql_api(trip_data=trip_data)
+q1_instance.mr_api(trip_rdd=trip_data_rdd)
 
 mr_end_time = time.time()
 mr_q1_time = mr_end_time - mr_start_time
