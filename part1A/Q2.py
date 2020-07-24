@@ -29,8 +29,8 @@ class Q2(object):
                    grp_rdd[1]['max_distance'])
             )
         result.show()
-        
-    def mr_api(trip_data,vendors):
+
+    def mr_api(self, trip_data,vendors):
 
         trip_data = trip_data.map(lambda x : (x.split(",")[0],x.split(",")[1],x.split(",")[2],float(x.split(",")[3]),float(x.split(",")[4]),float(x.split(",")[5]),float(x.split(",")[6])))
 
