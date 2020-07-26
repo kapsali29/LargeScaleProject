@@ -51,7 +51,7 @@ cleaned_data = cc.data_cleansing(customer_complaints)
 
 
 ############# most common words
-lexikon_size = 200
+lexikon_size = 120
 my_words = cleaned_data.map(lambda x : (x[2]))
 my_words2 = my_words.flatMap(lambda x : (x.split(" ")))
 my_wordsk = my_words2.map(lambda x : x.lower())
@@ -80,9 +80,16 @@ complaints11 = complaints10.map(lambda x : (x[0], SparseVector(lexikon_size, [y[
 """
 ('Credit reporting credit repair services or other personal consumer reports', SparseVector(200, {1: 4.0, 3: 8.0, 6: 1.0, 8: 3.0, 9: 3.0, 11: 2.0, 12: 2.0, 14: 3.0, 21: 4.0, 28: 1.0, 31: 3.0, 37: 1.0, 42: 1.0, 43: 1.0, 44: 3.0, 54: 1.0, 78: 2.0, 90: 1.0, 102: 3.0, 113: 2.0, 134: 1.0, 174: 1.0}))
 """
+temp = complaints11.map(lambda x : (x[0].lower(), 1))
+temp1 = temp.reduceByKey(lambda x, y: x + y)
+temp2 = temp1.map(lambda x : (x[1], x[0]))
+temp3 = temp2.sortByKey(ascending=False)
+temp4 = temp3.map(lambda x: x[1])
+most_common_labels = temp4.take(4)
+#we have 18 different labels, we choose the 4 most common
+final_complaints = complaints11.filter(lambda x : x[0].lower() in most_common_labels)
 
-
-synolo_keimenwn = complaints11.count()
+synolo_keimenwn = final_complaints.count()
 
 data = only_distinct_words(cleaned_data)
 data1 = data.flatMap(lambda x : x.split(" "))
@@ -144,7 +151,7 @@ def float_tuple(tup):
 
 
 
-result = complaints11.map(lambda x : my_func(x, my_words, lexikon_size, synolo_keimenwn))
+result = final_complaints.map(lambda x : my_func(x, my_words, lexikon_size, synolo_keimenwn))
 result1 = result.map(lambda x : [x[0],x[1],float_tuple(x[2]),x[3]])
 result2 = result1.map(lambda x : (x[3],SparseVector(x[0],x[1],x[2])))
 resultDF = result2.toDF(["string_label","features"])
