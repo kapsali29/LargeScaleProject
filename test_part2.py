@@ -51,7 +51,7 @@ cleaned_data = cc.data_cleansing(customer_complaints)
 
 
 ############# most common words
-lexikon_size = 120
+lexikon_size = 230
 my_words = cleaned_data.map(lambda x : (x[2]))
 my_words2 = my_words.flatMap(lambda x : (x.split(" ")))
 my_wordsk = my_words2.map(lambda x : x.lower())
@@ -178,3 +178,4 @@ predictionAndLabels = result.select("prediction", "label")
 evaluator = MulticlassClassificationEvaluator(metricName="accuracy")
 print("Test set accuracy = " + str(evaluator.evaluate(predictionAndLabels)))
 
+#0.4114307678661187
