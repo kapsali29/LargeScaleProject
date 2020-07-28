@@ -140,7 +140,7 @@ lexikon = cleaned_data.map(lambda x : (x[2])). \
 ############# TFIDF
 
 broad_com_words = sc.broadcast(lexikon)
-complaints = cleaned_data.map(lambda x : (x[1],x[2].split(" ")))
+complaints = cleaned_data.map(lambda x : (x[1],x[2].split(" "))). \
         map(lambda x : (x[0], [y for y in x[1] if y in broad_com_words.value])). \
         filter(lambda x : len(x[1]) != 0). \
         zipWithIndex(). \
