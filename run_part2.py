@@ -1,7 +1,6 @@
-from part2.ml import CustomerComplaints
 import re
 from settings import CUSTOMER_COMPLAINTS_HDFS, STOP_WORDS
-
+from helpers import init_spark
 from math import log
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
@@ -117,8 +116,7 @@ def float_tuple(tup):
 
 
 
-cc = CustomerComplaints()
-sc = cc.sc
+spark, sc = init_spark()
 
 customer_complaints = sc.textFile(CUSTOMER_COMPLAINTS_HDFS)
 cleaned_data = data_cleansing(customer_complaints)
