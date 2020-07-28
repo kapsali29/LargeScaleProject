@@ -6,9 +6,9 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.ml.linalg import SparseVector
 from pyspark.ml.feature import StringIndexer
-from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-
+from pyspark.ml.classification import MultilayerPerceptronClassifier
+import time
 
 def split_row(row):
     """This function received RDD from textFile and splits data"""
@@ -23,21 +23,17 @@ def data_cleansing(customer_complaints):
     """This function is used to remove dirty data from customer complaints"""
     # keep only rows starting with `201`
     filtered_complaints_rdd = customer_complaints.filter(lambda complaint: complaint.startswith('201'))
-
     # split rows and remove dirty ones
     splitted_rows = filtered_complaints_rdd.map(lambda x : split_row(x))
     cleaned_complaints = splitted_rows.filter(lambda complaint: complaint is not None)
-
     # keep only rows that have user comment
     keep_complaints = cleaned_complaints.filter(lambda complaint: complaint[2] != '')
     return keep_complaints
 
 
 def unique(list1):
-
     # intilize a null list 
     unique_list = []
-
     # traverse for all elements 
     for x in list1:
         # check if exists in unique_list or not 
@@ -48,21 +44,15 @@ def unique(list1):
 
 def only_distinct_words(complaints):
     """This function returns the words, which are not stop words, from a list of complaints"""
-
     # split the words
     words = complaints.map(lambda x:  x[2].split(' '))
-
     # convert all words to lower case
     lower_case_words = words.map(lambda x: ([word.lower() for word in x]))
-
     # keep only the distinct words
     distinct_words = lower_case_words.map(lambda x: unique(x))
-
     # keep only the strings that include only letters
     only_words = distinct_words.map(lambda x: ( " ".join([word for word in x if bool(
-            re.match("^[a-z]*$", word)) and word != '' and word not in STOP_WORDS])))
-
-        
+            re.match("^[a-z]*$", word)) and word != '' and word not in STOP_WORDS])))       
     # keep only the words that are not stop words
     return only_words
 
@@ -136,6 +126,7 @@ lexikon = cleaned_data.map(lambda x : (x[2])). \
         filter(lambda x : x not in STOP_WORDS). \
         take(lexikon_size) 
 ############# TFIDF
+time.sleep(20)
 
 broad_com_words = sc.broadcast(lexikon)
 complaints = cleaned_data.map(lambda x : (x[1],x[2].split(" "))). \
@@ -150,18 +141,23 @@ complaints = cleaned_data.map(lambda x : (x[1],x[2].split(" "))). \
         map(lambda x : (x[0][1], sorted(x[1], key = lambda y : y[0]))). \
         map(lambda x : (x[0], SparseVector(lexikon_size, [y[0] for y in x[1]], [y[1] for y in x[1]])))
 
+time.sleep(20)
+
 most_common_labels = complaints.map(lambda x : (x[0].lower(), 1)). \
         reduceByKey(lambda x, y: x + y). \
         map(lambda x : (x[1], x[0])). \
         sortByKey(ascending=False). \
         map(lambda x: x[1]). \
         take(4)
-
-
 #we have 18 different labels, we choose the 4 most common
+
+time.sleep(20)
+
+
 final_complaints = complaints.filter(lambda x : x[0].lower() in most_common_labels)
 
 synolo_keimenwn = final_complaints.count()
+#337599 apo ta ~480000
 
 data = only_distinct_words(cleaned_data). \
         flatMap(lambda x : x.split(" ")). \
@@ -173,6 +169,7 @@ data = only_distinct_words(cleaned_data). \
 #to data exei to pli8os diforetikwn keimenwn pou periexoyn tis le3eis toy le3ikou
 my_words = data.collect()
 
+time.sleep(20)
 
 result = final_complaints.map(lambda x : tfidf_calc(x, my_words, lexikon_size, synolo_keimenwn)). \
         map(lambda x : [x[0],x[1],float_tuple(x[2]),x[3]]). \
@@ -184,15 +181,22 @@ stringIndexer.setHandleInvalid("skip")
 stringIndexerModel = stringIndexer.fit(resultDF)
 resultDF = stringIndexerModel.transform(resultDF)
 
+train = resultDF.sampleBy('label', fractions = {0.0 :0.7, 1.0 :0.7, 2.0 :0.7, 3.0 :0.7}, seed = 10)
 
-(train, test) = resultDF.randomSplit([0.7, 0.3])
+test = resultDF.subtract(train)
+layers = [5, 4, 4]
+mlp = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
+model = mlp.fit(train)
+
+time.sleep(20)
+
 train = train.cache()
-lr = LogisticRegression(maxIter=100, regParam=0.3, elasticNetParam=0.8, featuresCol='features', labelCol='label')
-lrModel = lr.fit(train)
 
-result = lrModel.transform(test)
+
+
+result = model.transform(test)
 predictionAndLabels = result.select("prediction", "label")
 evaluator = MulticlassClassificationEvaluator(metricName="accuracy")
 print("Test set accuracy = " + str(evaluator.evaluate(predictionAndLabels)))
 
-#0.4114307678661187
+#0.4114307678661187 lr
