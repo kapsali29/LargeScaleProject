@@ -184,17 +184,11 @@ resultDF = stringIndexerModel.transform(resultDF)
 train = resultDF.sampleBy('label', fractions = {0.0 :0.7, 1.0 :0.7, 2.0 :0.7, 3.0 :0.7}, seed = 10)
 
 test = resultDF.subtract(train)
-layers = [5, 4, 4]
-mlp = MultilayerPerceptronClassifier(maxIter=100, layers=layers, blockSize=128, seed=1234)
-model = mlp.fit(train)
 
-time.sleep(20)
+lr = LogisticRegression(maxIter=100, regParam=0.3, elasticNetParam=0.8, featuresCol='features', labelCol='label')
+lrModel = lr.fit(train)
 
-train = train.cache()
-
-
-
-result = model.transform(test)
+result = lrModel.transform(test)
 predictionAndLabels = result.select("prediction", "label")
 evaluator = MulticlassClassificationEvaluator(metricName="accuracy")
 print("Test set accuracy = " + str(evaluator.evaluate(predictionAndLabels)))
