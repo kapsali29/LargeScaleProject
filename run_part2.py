@@ -192,5 +192,3 @@ result = lrModel.transform(test)
 predictionAndLabels = result.select("prediction", "label")
 evaluator = MulticlassClassificationEvaluator(metricName="accuracy")
 print("Test set accuracy = " + str(evaluator.evaluate(predictionAndLabels)))
-
-#0.4114307678661187 lr
